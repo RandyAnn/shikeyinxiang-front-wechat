@@ -34,6 +34,7 @@ const state = {
 		{ name: '无麸质', selected: false },
 		{ name: '低钠', selected: false }
 	],
+	// 用户登录状态
 	isLogin: false,
 	loading: false,
 	localAvatarPath: '', // 本地头像缓存路径
