@@ -1,4 +1,5 @@
 <script>
+// App.vue: Global application script setup
 import { mapActions } from 'vuex'
 import { isTokenExpired } from '@/utils/request'
 
