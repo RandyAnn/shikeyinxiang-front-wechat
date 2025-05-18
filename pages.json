@@ -1,0 +1,119 @@
+{
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"backgroundTextStyle": "dark"
+			}
+		},
+		{
+			"path": "pages/diet-record/index",
+			"style": {
+				"navigationBarTitleText": "饮食记录",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"backgroundTextStyle": "dark"
+			}
+		},
+		{
+			"path": "pages/diet-record/add",
+			"style": {
+				"navigationBarTitleText": "添加饮食",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/nutrition-analysis/index",
+			"style": {
+				"navigationBarTitleText": "营养分析",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/health-report/index",
+			"style": {
+				"navigationBarTitleText": "健康报告",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/mine/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/profile",
+			"style": {
+				"navigationBarTitleText": "个人信息"
+			}
+		},
+		{
+			"path": "pages/mine/goal",
+			"style": {
+				"navigationBarTitleText": "目标设置"
+			}
+		},
+		{
+			"path": "pages/mine/settings",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "饮食记录助手",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#4CAF50",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/icons/home.png",
+				"selectedIconPath": "static/icons/home-active.png"
+			},
+			{
+				"pagePath": "pages/diet-record/index",
+				"text": "饮食记录",
+				"iconPath": "static/icons/diet.png",
+				"selectedIconPath": "static/icons/diet-active.png"
+			},
+			{
+				"pagePath": "pages/nutrition-analysis/index",
+				"text": "营养分析",
+				"iconPath": "static/icons/analysis.png",
+				"selectedIconPath": "static/icons/analysis-active.png"
+			},
+			{
+				"pagePath": "pages/mine/index",
+				"text": "我的",
+				"iconPath": "static/icons/mine.png",
+				"selectedIconPath": "static/icons/mine-active.png"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}
