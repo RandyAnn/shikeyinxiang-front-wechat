@@ -3,7 +3,7 @@
     <!-- 遮罩层和裁剪组件 -->
     <view class="cropper-mask" v-if="showCropper"></view>
     <qf-image-cropper v-if="showCropper" :src="tempImagePath" :width="300" :height="300" :radius="150" @crop="onCropComplete" :zIndex="1000"></qf-image-cropper>
-    
+
     <!-- 模态框组件 -->
     <view class="modal-mask" v-if="showModal"></view>
     <view class="modal-container" v-if="showModal">
@@ -18,10 +18,10 @@
         <button class="modal-btn confirm" @click="confirmModal">确定</button>
       </view>
     </view>
-    
+
     <!-- 上传遮罩层 -->
     <view class="modal-mask" v-if="showUploadMask"></view>
-    
+
     <!-- 个人信息列表 -->
     <view class="info-list">
       <!-- 头像项 -->
@@ -32,7 +32,7 @@
           <image class="arrow-icon" src="/static/icons/arrow-right.png"></image>
         </view>
       </view>
-      
+
       <!-- 用户名项 -->
       <view class="info-item" @click="openModal('用户名', username)">
         <text class="item-label">用户名</text>
@@ -41,7 +41,7 @@
           <image class="arrow-icon" src="/static/icons/arrow-right.png"></image>
         </view>
       </view>
-      
+
       <!-- 邮箱项 -->
       <view class="info-item" @click="openModal('邮箱', email)">
         <text class="item-label">邮箱</text>
@@ -58,7 +58,6 @@
 import { mapState, mapActions } from 'vuex'
 import { getAvatarUploadUrl, getUserAvatar } from '@/api/user'
 import QfImageCropper from '@/components/qf-image-cropper/qf-image-cropper'
-import { checkFileExists, downloadAndCacheAvatar } from '@/utils/fileCache'
 
 export default {
   components: {
@@ -82,39 +81,29 @@ export default {
   computed: {
     ...mapState({
       userInfo: state => state.user.userInfo,
-      isLogin: state => state.user.isLogin,
-      localAvatarPath: state => state.user.localAvatarPath,
-      avatarNeedsUpdate: state => state.user.avatarNeedsUpdate
+      isLogin: state => state.user.isLogin
     }),
     maskedEmail() {
       if (!this.email) return '';
-      
+
       // 找到@符号的位置
       const atIndex = this.email.indexOf('@');
       if (atIndex <= 1) return this.email; // 邮箱格式异常或过短
-      
+
       // 取邮箱的前两个字符和@后面的部分，中间用****替代
       const prefix = this.email.substring(0, 2);
       const suffix = this.email.substring(atIndex);
-      
+
       return prefix + '****' + suffix;
     },
+    // 简化的头像源：直接使用远程URL或默认头像
     avatarSource() {
-      if (this.localAvatarPath) {
-        return this.localAvatarPath;
-      }
       return this.userInfo.avatar || '/static/images/default-avatar.png';
     }
   },
   onLoad() {
-    // 只初始化数据，不检查头像
+    // 初始化数据
     this.initData()
-  },
-  onShow() {
-    // 页面显示时，如果已登录且头像需要更新，检查头像
-    if (this.isLogin && this.avatarNeedsUpdate) {
-      this.checkLocalAvatar()
-    }
   },
   methods: {
     ...mapActions({
@@ -125,24 +114,6 @@ export default {
       this.userId = this.userInfo.id || ''
       this.username = this.userInfo.username || ''
       this.email = this.userInfo.email || ''
-    },
-    // 检查本地头像
-    async checkLocalAvatar() {
-      try {
-        // 检查是否有本地缓存的头像
-        const hasLocalAvatar = this.localAvatarPath ? 
-          await checkFileExists(this.localAvatarPath) : false;
-        
-        // 如果本地没有缓存或头像需要更新，且有远程头像URL
-        if ((!hasLocalAvatar || this.avatarNeedsUpdate) && this.userInfo.avatar) {
-          // 下载并缓存头像
-          const newLocalPath = await downloadAndCacheAvatar(this.userInfo.avatar);
-          this.$store.commit('user/SET_LOCAL_AVATAR_PATH', newLocalPath);
-          this.$store.commit('user/SET_AVATAR_UPDATE_STATUS', false);
-        }
-      } catch (error) {
-        console.error('检查或缓存头像失败', error);
-      }
     },
     // 打开模态框
     openModal(title, value) {
@@ -163,10 +134,10 @@ export default {
       } else if (this.currentField === 'email') {
         this.email = this.modalInputValue
       }
-      
+
       // 保存单项修改
       this.saveField(this.currentField, this.modalInputValue)
-      
+
       // 关闭模态框
       this.showModal = false
     },
@@ -177,17 +148,17 @@ export default {
         id: this.userId,
         ...this.userInfo
       }
-      
+
       // 更新对应字段
       if (field === 'username') {
         userData.nickname = value
       } else if (field === 'email') {
         userData.email = value
       }
-      
+
       // 调用 store action 更新用户信息
       uni.showLoading({ title: '保存中...' })
-      
+
       this.updateUserInfo(userData)
         .then(() => {
           uni.hideLoading()
@@ -227,14 +198,14 @@ export default {
             }
           })
         })
-        
+
         // 如果没有选择文件，直接返回
         if (!tempFiles || tempFiles.length === 0) {
           return;
         }
-        
+
         const tempFilePath = tempFiles[0].path
-        
+
         // 2. 检查图片大小
         const maxSize = 5 * 1024 * 1024 // 5MB
         if (tempFiles[0].size > maxSize) {
@@ -244,11 +215,11 @@ export default {
           })
           return
         }
-        
+
         // 3. 显示裁剪组件
         this.tempImagePath = tempFilePath
         this.showCropper = true
-        
+
       } catch (error) {
         console.error('选择图片失败', error)
         // 只在非用户取消的情况下显示错误提示
@@ -277,13 +248,13 @@ export default {
           })
           return
         }
-        
+
         // 1. 显示上传中的提示和遮罩
         this.showUploadMask = true
         uni.showLoading({
           title: '上传中...'
         })
-        
+
         // 2. 获取图片类型
         const fileType = this.croppedImagePath.substring(this.croppedImagePath.lastIndexOf('.') + 1)
         let contentType
@@ -301,12 +272,12 @@ export default {
           default:
             contentType = 'image/jpeg' // 裁剪后的图片格式可能不明确，默认使用jpeg
         }
-        
+
         try {
           // 3. 获取预签名上传URL (直接传递contentType作为数据而非查询参数)
           const uploadRes = await getAvatarUploadUrl(contentType)
           const { uploadUrl, fileName } = uploadRes.data
-          
+
           // 4. 使用微信小程序的方式构建二进制上传请求
           const uploadResult = await new Promise((resolve, reject) => {
             // 读取文件为ArrayBuffer
@@ -317,7 +288,7 @@ export default {
               success: function(readRes) {
                 // 获取ArrayBuffer数据
                 const buffer = readRes.data
-                
+
                 // 使用微信原生API直接发送请求
                 wx.request({
                   url: uploadUrl,
@@ -348,9 +319,9 @@ export default {
               }
             })
           })
-          
+
           console.log('上传结果:', uploadResult)
-          
+
           // 5. 获取新的头像URL
           const avatarRes = await getUserAvatar()
           if (avatarRes.data && avatarRes.data.avatarUrl) {
@@ -359,14 +330,7 @@ export default {
               ...this.userInfo,
               avatar: avatarRes.data.avatarUrl
             })
-            
-            // 立即下载并缓存新头像
-            const newLocalPath = await downloadAndCacheAvatar(avatarRes.data.avatarUrl)
-            this.$store.commit('user/SET_LOCAL_AVATAR_PATH', newLocalPath)
-            
-            // 设置头像不需要更新，因为我们已经立即更新了
-            this.$store.commit('user/SET_AVATAR_UPDATE_STATUS', false)
-            
+
             // 7. 显示成功提示
             uni.hideLoading()
             uni.showToast({
@@ -469,12 +433,12 @@ export default {
   text-align: center;
   font-size: 32rpx;
   border-radius: 0;
-  
+
   &.cancel {
     color: #999;
     border-right: 1rpx solid #eee;
   }
-  
+
   &.confirm {
     color: #4CAF50;
   }
@@ -492,37 +456,37 @@ export default {
   align-items: center;
   padding: 30rpx;
   border-bottom: 1rpx solid #f5f5f5;
-  
+
   .item-label {
     font-size: 30rpx;
     color: #333;
   }
-  
+
   .item-content {
     display: flex;
     align-items: center;
-    
+
     .item-value {
       font-size: 28rpx;
       color: #666;
       margin-right: 20rpx;
-      
+
       &.disabled {
         color: #999;
       }
     }
-    
+
     .arrow-icon {
       width: 32rpx;
       height: 32rpx;
     }
   }
-  
+
   .avatar-wrapper {
     display: flex;
     align-items: center;
   }
-  
+
   .avatar-small {
     width: 80rpx;
     height: 80rpx;
@@ -530,4 +494,4 @@ export default {
     margin-right: 20rpx;
   }
 }
-</style> 
+</style>

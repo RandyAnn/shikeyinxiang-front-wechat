@@ -84,70 +84,28 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { getUserAvatar } from '@/api/user'
-import { downloadAndCacheAvatar, checkFileExists } from '@/utils/fileCache'
 
 export default {
-  data() {
-    return {
-      avatarRequestInProgress: false, // 添加请求锁，防止并发请求
-      avatarRequestTimeoutId: null // 存储请求锁超时计时器ID
-    }
-  },
   computed: {
     ...mapState({
       userInfo: state => state.user.userInfo,
-      isLogin: state => state.user.isLogin,
-      avatarNeedsUpdate: state => state.user.avatarNeedsUpdate,
-      localAvatarPath: state => state.user.localAvatarPath
+      isLogin: state => state.user.isLogin
     }),
-    // 计算属性：返回要显示的头像路径（本地缓存或默认头像）
+    // 简化的头像路径计算：直接使用远程URL或默认头像
     avatarPath() {
-      if (this.localAvatarPath) {
-        return this.localAvatarPath
-      }
-      if (this.userInfo.avatar) {
-        return this.userInfo.avatar
-      }
-      return '/static/images/default-avatar.png'
-    }
-  },
-  watch: {
-    isLogin(newVal) {
-      if (newVal === true) {
-        // 只在监听到 isLogin 变为 true 且没有进行中的请求时触发头像更新
-        if (!this.avatarRequestInProgress) {
-          this.checkAndUpdateAvatar()
-        }
-      }
+      return this.userInfo.avatar || '/static/images/default-avatar.png'
     }
   },
   onLoad() {
-    // 立即设置请求锁，让 onLoad 中的请求优先执行
-    this.setRequestLock()
-
-    // 如果 store 中已有数据，直接使用
-    if (this.isLogin && this.userInfo) {
-      if (this.avatarNeedsUpdate) {
-        this.checkAndUpdateAvatar()
-      }
-      this.releaseRequestLock()
-    } else {
-      // 否则获取用户信息
-      this.getUserInfo().then(() => {
-        if (this.isLogin) {
-          this.checkAndUpdateAvatar()
-        } else {
-          this.releaseRequestLock()
-        }
-      }).catch(err => {
-        this.releaseRequestLock()
-      })
+    // 如果已登录但没有头像URL，异步获取
+    if (this.isLogin && !this.userInfo.avatar) {
+      this.loadAvatarUrl()
     }
   },
   onShow() {
-    // 页面显示时，如果已登录且头像需要更新且没有进行中的请求，才检查头像
-    if (this.isLogin && this.avatarNeedsUpdate && !this.avatarRequestInProgress) {
-      this.checkAndUpdateAvatar()
+    // 页面显示时，如果已登录但没有头像URL，异步获取
+    if (this.isLogin && !this.userInfo.avatar) {
+      this.loadAvatarUrl()
     }
   },
   methods: {
@@ -160,72 +118,20 @@ export default {
         url
       })
     },
-    // 设置请求锁并启动超时计时器
-    setRequestLock() {
-      this.avatarRequestInProgress = true
-      // 清除可能存在的旧计时器
-      if (this.avatarRequestTimeoutId) {
-        clearTimeout(this.avatarRequestTimeoutId)
-      }
-      // 设置10秒超时，确保锁不会永久阻塞
-      this.avatarRequestTimeoutId = setTimeout(() => {
-        this.avatarRequestInProgress = false
-        this.avatarRequestTimeoutId = null
-      }, 10000) // 10秒超时
-    },
-    // 释放请求锁并清除计时器
-    releaseRequestLock() {
-      this.avatarRequestInProgress = false
-      if (this.avatarRequestTimeoutId) {
-        clearTimeout(this.avatarRequestTimeoutId)
-        this.avatarRequestTimeoutId = null
-      }
-    },
-    // 检查并更新头像
-    async checkAndUpdateAvatar() {
-      // 如果已经有请求在进行中，则退出
-      if (this.avatarRequestInProgress && !this.avatarRequestTimeoutId) {
-        return
-      }
-
-      // 设置请求锁
-      this.setRequestLock()
-
+    // 简化的头像URL加载方法
+    async loadAvatarUrl() {
       try {
-        // 检查本地缓存是否存在
-        const hasLocalAvatar = await checkFileExists(this.localAvatarPath)
-
-        // 如果本地头像不存在或需要更新，则获取远程头像
-        if (!hasLocalAvatar || this.avatarNeedsUpdate) {
-
-          // 如果没有头像URL，先获取
-          if (!this.userInfo.avatar) {
-            const res = await getUserAvatar()
-            if (res.data && res.data.avatarUrl) {
-              // 更新头像URL到store
-              this.$store.commit('user/SET_USER_INFO', {
-                ...this.userInfo,
-                avatar: res.data.avatarUrl
-              })
-
-              // 下载并缓存头像
-              const localPath = await downloadAndCacheAvatar(res.data.avatarUrl)
-              this.$store.commit('user/SET_LOCAL_AVATAR_PATH', localPath)
-            }
-          } else {
-            // 有头像URL但本地缓存不存在，直接下载
-            const localPath = await downloadAndCacheAvatar(this.userInfo.avatar)
-            this.$store.commit('user/SET_LOCAL_AVATAR_PATH', localPath)
-          }
-
-          // 设置头像不需要更新
-          this.$store.commit('user/SET_AVATAR_UPDATE_STATUS', false)
+        const res = await getUserAvatar()
+        if (res.data && res.data.avatarUrl) {
+          // 更新头像URL到store
+          this.$store.commit('user/SET_USER_INFO', {
+            ...this.userInfo,
+            avatar: res.data.avatarUrl
+          })
         }
       } catch (error) {
-        // 出错处理
-      } finally {
-        // 无论成功失败，都释放请求锁并清除计时器
-        this.releaseRequestLock()
+        console.log('获取头像URL失败', error)
+        // 静默失败，使用默认头像
       }
     },
     showFeedback() {

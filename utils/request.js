@@ -1,9 +1,9 @@
 import store from '@/store'
 
 // 基础URL
-// const baseURL = 'http://192.168.18.189:8084'
-// const baseURL = 'http://192.168.202.223:8084'
-const baseURL = 'http://localhost:8084'
+// const baseURL = 'http://192.168.157.189:8084'
+const baseURL = 'http://192.168.202.223:8084'
+// const baseURL = 'http://localhost:8084'
 
 // 自定义base64解码函数，兼容不同环境
 function base64Decode(str) {

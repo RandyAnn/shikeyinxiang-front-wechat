@@ -36,9 +36,7 @@ const state = {
 	],
 	// 用户登录状态
 	isLogin: false,
-	loading: false,
-	localAvatarPath: '', // 本地头像缓存路径
-	avatarNeedsUpdate: true // 头像是否需要更新
+	loading: false
 };
 
 const mutations = {
@@ -61,14 +59,6 @@ const mutations = {
 	},
 	SET_LOADING(state, status) {
 		state.loading = status;
-	},
-	// 新增：设置本地头像路径
-	SET_LOCAL_AVATAR_PATH(state, path) {
-		state.localAvatarPath = path;
-	},
-	// 新增：设置头像更新状态
-	SET_AVATAR_UPDATE_STATUS(state, status) {
-		state.avatarNeedsUpdate = status;
 	}
 };
 
@@ -298,9 +288,6 @@ const actions = {
 			uni.removeStorageSync('nutritionGoal');
 			commit('SET_LOGIN_STATUS', false);
 			commit('SET_USER_INFO', {});
-			commit('SET_AVATAR_UPDATE_STATUS', true);
-			// 清除本地头像路径
-			commit('SET_LOCAL_AVATAR_PATH', '');
 
 			uni.reLaunch({
 				url: '/pages/login/index'
