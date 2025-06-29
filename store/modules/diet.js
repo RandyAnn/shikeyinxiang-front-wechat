@@ -26,6 +26,16 @@ const state = {
 const mutations = {
   // 设置饮食记录列表
   SET_DIET_RECORDS(state, { records, isFirstPage }) {
+    // 确保 state.dietRecords 是一个有效的对象
+    if (!state.dietRecords || typeof state.dietRecords !== 'object') {
+      state.dietRecords = {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        snacks: []
+      }
+    }
+
     // 支持两种情况：
     // 1. records是按mealType分组的对象 - 前端预处理的情况
     // 2. records是记录数组 - API返回的原始数据
@@ -65,20 +75,36 @@ const mutations = {
         })
       })
 
-      // 更新状态
-      state.dietRecords = isFirstPage ? mealTypeGroups : {
-        breakfast: [...state.dietRecords.breakfast, ...(mealTypeGroups.breakfast || [])],
-        lunch: [...state.dietRecords.lunch, ...(mealTypeGroups.lunch || [])],
-        dinner: [...state.dietRecords.dinner, ...(mealTypeGroups.dinner || [])],
-        snacks: [...state.dietRecords.snacks, ...(mealTypeGroups.snacks || [])]
+      // 更新状态 - 确保现有数据结构的安全性
+      if (isFirstPage) {
+        state.dietRecords = mealTypeGroups
+      } else {
+        state.dietRecords = {
+          breakfast: [...(state.dietRecords.breakfast || []), ...(mealTypeGroups.breakfast || [])],
+          lunch: [...(state.dietRecords.lunch || []), ...(mealTypeGroups.lunch || [])],
+          dinner: [...(state.dietRecords.dinner || []), ...(mealTypeGroups.dinner || [])],
+          snacks: [...(state.dietRecords.snacks || []), ...(mealTypeGroups.snacks || [])]
+        }
       }
     } else {
+      // 处理非数组格式的records（对象格式）
+      const safeRecords = records || {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        snacks: []
+      }
+
       // 如果是第一页，直接替换；否则追加
-      state.dietRecords = isFirstPage ? records : {
-        breakfast: [...state.dietRecords.breakfast, ...(records.breakfast || [])],
-        lunch: [...state.dietRecords.lunch, ...(records.lunch || [])],
-        dinner: [...state.dietRecords.dinner, ...(records.dinner || [])],
-        snacks: [...state.dietRecords.snacks, ...(records.snacks || [])]
+      if (isFirstPage) {
+        state.dietRecords = safeRecords
+      } else {
+        state.dietRecords = {
+          breakfast: [...(state.dietRecords.breakfast || []), ...(safeRecords.breakfast || [])],
+          lunch: [...(state.dietRecords.lunch || []), ...(safeRecords.lunch || [])],
+          dinner: [...(state.dietRecords.dinner || []), ...(safeRecords.dinner || [])],
+          snacks: [...(state.dietRecords.snacks || []), ...(safeRecords.snacks || [])]
+        }
       }
     }
   },
@@ -110,6 +136,22 @@ const mutations = {
         lunch: [],
         dinner: [],
         snacks: []
+      }
+    } else {
+      // 即使保留旧数据，也要确保数据结构正确
+      if (!state.dietRecords || typeof state.dietRecords !== 'object') {
+        state.dietRecords = {
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+          snacks: []
+        }
+      } else {
+        // 确保所有餐次属性都存在
+        state.dietRecords.breakfast = state.dietRecords.breakfast || []
+        state.dietRecords.lunch = state.dietRecords.lunch || []
+        state.dietRecords.dinner = state.dietRecords.dinner || []
+        state.dietRecords.snacks = state.dietRecords.snacks || []
       }
     }
     state.page = 1
