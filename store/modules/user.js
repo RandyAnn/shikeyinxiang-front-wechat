@@ -200,15 +200,16 @@ const actions = {
 
 	// 更新用户信息
 	async updateUserInfo({
-		commit
+		commit,
+		dispatch
 	}, data) {
 		commit('SET_LOADING', true);
 		try {
 			const response = await updateUserInfo(data);
 
-			// 更新状态并保存到本地
-			commit('SET_USER_INFO', response.data);
-			uni.setStorageSync('userInfo', response.data);
+			// 更新成功后重新获取完整的用户信息，而不是直接替换
+			// 因为API返回的可能只是成功标志，不是完整的用户信息
+			await dispatch('getUserInfo');
 
 			return response;
 		} catch (error) {

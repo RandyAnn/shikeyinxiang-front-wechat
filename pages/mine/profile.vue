@@ -143,15 +143,12 @@ export default {
     },
     // 保存单个字段
     saveField(field, value) {
-      // 构建要更新的数据
-      const userData = {
-        id: this.userId,
-        ...this.userInfo
-      }
+      // 只传递需要更新的字段，不传递整个用户信息对象
+      const userData = {}
 
       // 更新对应字段
       if (field === 'username') {
-        userData.nickname = value
+        userData.username = value  // 修正：应该是username而不是nickname
       } else if (field === 'email') {
         userData.email = value
       }

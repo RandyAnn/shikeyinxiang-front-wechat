@@ -12,7 +12,7 @@ export function login(data) {
 // 获取用户信息
 export function getUserInfo() {
   return request({
-    url: '/user/info',
+    url: '/api/user/info',
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getUserInfo() {
 // 更新用户信息
 export function updateUserInfo(data) {
   return request({
-    url: '/user/update',
+    url: '/api/user/update',
     method: 'put',
     data
   })
@@ -29,7 +29,7 @@ export function updateUserInfo(data) {
 // 更新用户头像
 export function updateUserAvatar(data) {
   return request({
-    url: '/user/avatar',
+    url: '/api/user/avatar',
     method: 'put',
     data
   })
@@ -38,7 +38,7 @@ export function updateUserAvatar(data) {
 // 获取用户的健康数据
 export function getUserHealthData() {
   return request({
-    url: '/user/health-data',
+    url: '/api/user/health-data',
     method: 'get'
   })
 }
@@ -46,7 +46,7 @@ export function getUserHealthData() {
 // 更新用户健康目标
 export function updateHealthGoal(data) {
   return request({
-    url: '/user/health-goal',
+    url: '/api/user/health-goal',
     method: 'put',
     data
   })
@@ -55,7 +55,7 @@ export function updateHealthGoal(data) {
 // 更新用户目标
 export function updateUserGoal(data) {
   return request({
-    url: '/user/goal',
+    url: '/api/user/goal',
     method: 'put',
     data
   })
@@ -64,7 +64,7 @@ export function updateUserGoal(data) {
 // 获取用户设置
 export function getUserSettings() {
   return request({
-    url: '/user/settings',
+    url: '/api/user/settings',
     method: 'get'
   })
 }
@@ -72,7 +72,7 @@ export function getUserSettings() {
 // 更新用户设置
 export function updateUserSettings(data) {
   return request({
-    url: '/user/settings',
+    url: '/api/user/settings',
     method: 'put',
     data
   })
@@ -81,7 +81,7 @@ export function updateUserSettings(data) {
 // 获取用户营养目标
 export function getNutritionGoal() {
   return request({
-    url: '/user/nutrition-goal',
+    url: '/api/user/nutrition-goal',
     method: 'get'
   })
 }
@@ -89,7 +89,7 @@ export function getNutritionGoal() {
 // 更新用户营养目标
 export function updateNutritionGoal(data) {
   return request({
-    url: '/user/nutrition-goal',
+    url: '/api/user/nutrition-goal',
     method: 'put',
     data
   })
@@ -98,7 +98,7 @@ export function updateNutritionGoal(data) {
 // 生成头像上传URL
 export function getAvatarUploadUrl(contentType) {
   return request({
-    url: `/user/avatar/upload-url?contentType=${encodeURIComponent(contentType)}`,
+    url: `/api/user/avatar/upload-url?contentType=${encodeURIComponent(contentType)}`,
     method: 'post'
   })
 }
@@ -106,7 +106,7 @@ export function getAvatarUploadUrl(contentType) {
 // 获取用户头像URL
 export function getUserAvatar() {
   return request({
-    url: '/user/avatar',
+    url: '/api/user/avatar',
     method: 'get'
   })
 }
