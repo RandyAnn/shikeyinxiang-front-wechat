@@ -130,8 +130,9 @@ const actions = {
       const response = await getFoodCategories()
 
       if (response.code === 200) {
-        // 后端现在返回的是FoodCategoryDTO对象列表
-        commit('SET_FOOD_CATEGORIES', response.data)
+        // 新的返回结构：data.records 包含分类列表
+        const categories = response.data.records || response.data
+        commit('SET_FOOD_CATEGORIES', categories)
       }
 
       return response

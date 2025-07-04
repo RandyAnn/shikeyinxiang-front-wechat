@@ -23,7 +23,7 @@ export function getFoodList(params) {
  */
 export function getFoodCategories() {
   return request({
-    url: '/api/food/categories',
+    url: '/api/food/category',
     method: 'get'
   })
 }
